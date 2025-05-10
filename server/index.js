@@ -10,11 +10,16 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
+
+// CORS Configuration: Allow requests from the frontend hosted on Netlify
 app.use(cors({
   origin: 'https://onlinecompilers.netlify.app', // frontend domain
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
+  methods: ['GET', 'POST', 'OPTIONS'], // Handle OPTIONS preflight requests
+  allowedHeaders: ['Content-Type', 'Authorization'], // Add any necessary headers
 }));
+
+// Handle preflight requests
+app.options("*", cors());
 
 // Function to decode Base64
 const decodeBase64 = (str) => {
