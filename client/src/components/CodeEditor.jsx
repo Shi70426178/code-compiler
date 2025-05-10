@@ -1,19 +1,27 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Monaco from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
 
 const CodeEditor = ({ code, setCode, language, theme, fontSize, fontFamily }) => {
-    useEffect( ()=> {
-      const monacoTheme = theme.replace("theme-", "");
-      monaco.editor.setTheme(monacoTheme);
-    }, [theme])
+    const monacoRef = useRef(null);
+
+    const handleEditorDidMount = (_, monaco) => {
+        monacoRef.current = monaco;
+        const monacoTheme = theme.replace("theme-", "");
+        monaco.editor.setTheme(monacoTheme);
+    };
+
+    useEffect(() => {
+        if (monacoRef.current) {
+            const monacoTheme = theme.replace("theme-", "");
+            monacoRef.current.editor.setTheme(monacoTheme);
+        }
+    }, [theme]);
 
     return (
         <Monaco
             height="80vh"
             language={language}
-            theme={theme}
+            theme={theme} // Should be a valid Monaco theme like "vs-dark"
             value={code}
             options={{
                 fontSize,
@@ -21,6 +29,7 @@ const CodeEditor = ({ code, setCode, language, theme, fontSize, fontFamily }) =>
                 automaticLayout: true,
             }}
             onChange={(value) => setCode(value || "")}
+            onMount={handleEditorDidMount}
         />
     );
 };
